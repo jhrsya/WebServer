@@ -236,6 +236,8 @@ bool WebServer::InitSocket_() {
     int optval = 1;
     /* 端口复用 */
     /* 只有最后一个套接字会正常接收数据。 */
+    /*设置端口复用：通过设置 SO_REUSEADDR 选项来实现端口复用。
+    这样可以让多个套接字同时监听同一个端口，从而避免“Address already in use”错误。*/
     ret = setsockopt(listenFd_, SOL_SOCKET, SO_REUSEADDR, (const void*)&optval, sizeof(int));
     if(ret == -1) {
         LOG_ERROR("set socket setsockopt error !");
