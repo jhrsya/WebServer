@@ -31,6 +31,7 @@ bool Epoller::DelFd(int fd) {
 }
 
 int Epoller::Wait(int timeoutMs) {
+    //&events_[0] 是一个指向 epoll_event 结构体数组的指针，用于存放 epoll_wait() 返回的就绪事件。
     return epoll_wait(epollFd_, &events_[0], static_cast<int>(events_.size()), timeoutMs);
 }
 
