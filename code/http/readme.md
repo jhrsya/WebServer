@@ -142,6 +142,77 @@ int main() {
 //输出Hello,world!
 ```
 
+# httpresponse类
+public:
+函数：
+- 构造函数
+- 析构函数
+- Init(const std::string& srcDir, std::string& path, bool isKeepAlive = false, int code = -1): 初始化HTTP响应的一些成员变量，包括srcDir_，path_，isKeepAlive_和code_等。
+- MakeResponse(Buffer& buff): 生成HTTP响应的状态行、响应头和响应体，写入缓冲区。
+- UnmapFile(): 释放内存映射文件。
+- File(): 返回映射文件的起始地址。
+- FileLen() const: 返回映射文件的长度。
+- ErrorContent(Buffer& buff, std::string message): 生成HTTP错误响应的状态行、响应头和响应体，写入缓冲区。
+- Code() const: 返回响应状态码。
+
+
+private:
+函数：
+- AddStateLine_(Buffer& buff): 添加HTTP响应的状态行，即协议版本、状态码和状态描述。
+- AddHeader_(Buffer& buff): 添加HTTP响应的响应头，包括Content-Type、Content-Length和Connection等字段。
+- AddContent_(Buffer& buff): 添加HTTP响应的响应体，即请求的文件内容。
+- ErrorHtml_(): 生成HTTP错误响应的响应体，即错误信息的HTML页面。
+- GetFileType_(): 根据文件后缀名获取文件类型，用于生成Content-Type字段。
+
+成员对象：
+- code_: 响应状态码，表示HTTP响应的处理结果，是一个整型变量。
+- isKeepAlive_: 表示HTTP连接是否为长连接，是一个布尔变量。
+- path_: 请求的文件路径，是一个字符串变量。
+- srcDir_: 请求的文件所在的目录路径，是一个字符串变量。
+- mmFile_: 映射到内存中的文件内容的起始地址，是一个字符指针。
+- mmFileStat_: 存储映射文件的结构体，包含文件大小等信息。
+
+静态成员对象：
+- SUFFIX_TYPE: 文件后缀名与文件类型的对应关系，用于生成Content-Type字段。
+- CODE_STATUS: HTTP状态码与状态描述的对应关系，用于生成状态行。
+- CODE_PATH: HTTP状态码与错误页面路径的对应关系，用于生成错误信息的HTML页面。
+
+# httpconn类
+public:
+成员函数：
+- HttpConn(): 构造函数，用于初始化成员变量。
+- ~HttpConn(): 析构函数，用于关闭连接和释放资源。
+- void init(int sockFd, const sockaddr_in& addr): 初始化连接的文件描述符和地址信息。
+- ssize_t read(int* saveErrno): 从连接中读取数据并存入读缓冲区中。
+- ssize_t write(int* saveErrno): 将写缓冲区中的数据写入连接中。
+- void Close(): 关闭连接。
+- int GetFd() const: 返回连接的文件描述符。
+- int GetPort() const: 返回连接的端口号。
+- const char* GetIP() const: 返回连接的 IP 地址。
+- sockaddr_in GetAddr() const: 返回连接的地址信息。
+- bool process(): 处理 HTTP 请求，生成 HTTP 响应并存入写缓冲区中。
+- int ToWriteBytes(): 返回要写入连接的字节数。
+- bool IsKeepAlive() const: 返回 HTTP 请求是否为长连接。
+
+静态成员变量：
+- isET: 表示是否使用边缘触发模式。
+- srcDir: 服务器根目录。
+- userCount: 当前连接数。
+
+private:
+成员变量：
+- fd_: 连接的 socket 文件描述符。
+- addr_: 连接的地址信息。
+- isClose_: 连接是否关闭。
+- iovCnt_: 发送消息时使用的 iovec 结构体个数。
+- iov_[2]: 发送消息时使用的 iovec 结构体数组。
+- readBuff_: 读缓冲区。
+- writeBuff_: 写缓冲区。
+- request_: 存储 HTTP 请求信息的对象。
+- response_: 存储 HTTP 响应信息的对象。
+
+
+
 # http主从状态机
 
 从状态机

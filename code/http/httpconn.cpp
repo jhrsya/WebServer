@@ -45,6 +45,8 @@ struct sockaddr_in HttpConn::GetAddr() const {
 }
 
 const char* HttpConn::GetIP() const {
+    //它的作用是将一个IPv4地址的二进制表示转换为点分十进制表示。
+    //addr_.sin_addr是二进制表示的地址
     return inet_ntoa(addr_.sin_addr);
 }
 
