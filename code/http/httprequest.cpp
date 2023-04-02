@@ -143,10 +143,10 @@ void HttpRequest::ParseFromUrlencoded_() {
             key = body_.substr(j, i - j);
             j = i + 1;
             break;
-        case '+':
+        case '+':   //+表示空格
             body_[i] = ' ';
             break;
-        case '%':
+        case '%':   //特殊符号会用% + 数字来表示，比如@用%40来表示，其中40是十六进制
             num = ConverHex(body_[i + 1]) * 16 + ConverHex(body_[i + 2]);
             body_[i + 2] = num % 10 + '0';
             body_[i + 1] = num / 10 + '0';
@@ -163,6 +163,7 @@ void HttpRequest::ParseFromUrlencoded_() {
         }
     }
     assert(j <= i);
+    //解析最后一个key-value
     if(post_.count(key) == 0 && j < i) {
         value = body_.substr(j, i - j);
         post_[key] = value;
@@ -188,6 +189,7 @@ bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin
     LOG_DEBUG("%s", order);
 
     if(mysql_query(sql, order)) { 
+        //查询失败，返回非零值
         mysql_free_result(res);
         return false; 
     }
